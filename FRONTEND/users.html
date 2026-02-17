@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Users Management | RMS Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --primary:#4f46e5;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --danger:#ef4444;
+  --success:#22c55e;
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+
+body{margin:0;background:var(--bg);display:flex}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:260px;background:#fff;border-right:1px solid var(--border);
+  padding:26px;position:fixed;height:100vh
+}
+.logo{display:flex;gap:12px;font-size:1.6rem;font-weight:900;color:var(--primary);margin-bottom:40px}
+.nav a{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border-radius:14px;text-decoration:none;color:var(--muted);
+  font-weight:600;margin-bottom:8px
+}
+.nav a.active,.nav a:hover{
+  background:linear-gradient(135deg,var(--primary),#4338ca);color:#fff
+}
+.logout{margin-top:50px;padding-top:20px;border-top:1px solid var(--border)}
+.logout button{
+  background:none;border:none;color:var(--danger);
+  font-weight:700;display:flex;gap:10px;cursor:pointer
+}
+
+/* ===== MAIN ===== */
+.main{margin-left:260px;padding:48px;width:100%;max-width:1400px}
+
+/* ===== HEADER ===== */
+.header{display:flex;justify-content:space-between;align-items:end;margin-bottom:36px}
+.header h1{margin:0;font-size:2.6rem;font-weight:900}
+.header p{margin-top:6px;color:var(--muted)}
+.search{
+  padding:14px 18px;border-radius:14px;
+  border:1px solid var(--border);width:280px
+}
+
+/* ===== STATS ===== */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:36px}
+.stat{
+  background:#fff;border:1px solid var(--border);
+  border-radius:20px;padding:26px;position:relative
+}
+.stat::after{
+  content:"";position:absolute;right:-30px;top:-30px;
+  width:100px;height:100px;background:rgba(79,70,229,.08);
+  border-radius:50%
+}
+.stat span{color:var(--muted);font-size:.85rem}
+.stat h2{margin-top:10px;font-size:2.4rem;font-weight:900}
+
+/* ===== TABLE ===== */
+.card{background:#fff;border:1px solid var(--border);border-radius:22px;overflow:hidden}
+.card-header{padding:22px 28px;border-bottom:1px solid var(--border);font-weight:800}
+
+table{width:100%;border-collapse:collapse}
+th,td{padding:18px 24px;text-align:left}
+th{font-size:.8rem;color:var(--muted)}
+
+tbody tr{transition:.2s}
+tbody tr:hover{background:#f8fafc}
+
+/* ===== USER CELL ===== */
+.user-cell{display:flex;align-items:center;gap:14px}
+.avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800
+}
+
+/* ===== BADGES ===== */
+.badge{
+  padding:6px 14px;border-radius:999px;
+  font-size:.7rem;font-weight:800
+}
+.admin{background:#dcfce7;color:#166534}
+.user{background:#e0e7ff;color:#3730a3}
+
+.delete{
+  background:#fee2e2;color:#991b1b;
+  border:none;padding:8px 14px;
+  border-radius:10px;font-weight:700;
+  cursor:pointer
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const admin = JSON.parse(localStorage.getItem("admin"));
+if(!admin) location.href="admin-login.html";
+</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo"><i data-lucide="shield"></i> RMS Admin</div>
+  <nav class="nav">
+    <a href="admin.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a class="active"><i data-lucide="users"></i> Users</a>
+    <a href="approvals.html"><i data-lucide="check-circle"></i> Approvals</a>
+  </nav>
+  <div class="logout">
+    <button onclick="logoutAdmin()"><i data-lucide="log-out"></i> Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <section class="header">
+    <div>
+      <h1>Users Management</h1>
+      <p>Full control over registered users</p>
+    </div>
+    <input class="search" placeholder="Search users..." oninput="filterUsers(this.value)">
+  </section>
+
+  <section class="stats">
+    <div class="stat"><span>Total Users</span><h2 id="totalUsers">0</h2></div>
+    <div class="stat"><span>Admins</span><h2 id="adminCount">0</h2></div>
+    <div class="stat"><span>Normal Users</span><h2 id="userCount">0</h2></div>
+  </section>
+
+  <div class="card">
+    <div class="card-header">Registered Users</div>
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Joined</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="usersTable"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+lucide.createIcons();
+let allUsers=[];
+
+async function loadUsers(){
+  const res = await fetch("http://127.0.0.1:5000/admin/users");
+  allUsers = await res.json();
+  renderUsers(allUsers);
+}
+
+function renderUsers(users){
+  usersTable.innerHTML="";
+  let admins=0;
+
+  users.forEach(u=>{
+    const isAdmin=u.email.includes("admin");
+    if(isAdmin) admins++;
+
+    usersTable.innerHTML+=`
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="avatar">${u.name.charAt(0).toUpperCase()}</div>
+            <div>
+              <strong>${u.name}</strong><br>
+              <small style="color:#64748b">ID: ${u.id}</small>
+            </div>
+          </div>
+        </td>
+        <td>${u.email}</td>
+        <td><span class="badge ${isAdmin?"admin":"user"}">${isAdmin?"ADMIN":"USER"}</span></td>
+        <td>${new Date(u.created_at).toLocaleDateString()}</td>
+        <td class="actions">
+          ${u.id===admin.id?"—":`<button class="delete" onclick="deleteUser(${u.id})">Delete</button>`}
+        </td>
+      </tr>`;
+  });
+
+  totalUsers.innerText=users.length;
+  adminCount.innerText=admins;
+  userCount.innerText=users.length-admins;
+}
+
+function filterUsers(q){
+  q=q.toLowerCase();
+  renderUsers(allUsers.filter(u=>u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q)));
+}
+
+async function deleteUser(id){
+  if(!confirm("⚠️ Delete this user permanently?")) return;
+  await fetch(`http://127.0.0.1:5000/admin/delete-user/${id}`,{method:"DELETE"});
+  loadUsers();
+}
+
+function logoutAdmin(){
+  localStorage.removeItem("admin");
+  location.href="index.html";
+}
+
+loadUsers();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Sales Overview | RMS Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --primary:#4f46e5;
+  --primary-dark:#4338ca;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --success:#22c55e;
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+
+body{
+  margin:0;
+  background:var(--bg);
+  display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:26px;
+  position:fixed;
+  height:100vh;
+}
+
+.logo{
+  display:flex;
+  gap:12px;
+  font-size:1.6rem;
+  font-weight:900;
+  color:var(--primary);
+  margin-bottom:40px;
+}
+
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.nav a.active,
+.nav a:hover{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+}
+
+.logout{
+  margin-top:50px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.logout button{
+  background:none;
+  border:none;
+  color:#ef4444;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* MAIN */
+.main{
+  margin-left:260px;
+  padding:48px;
+  width:100%;
+  max-width:1400px;
+}
+
+/* HEADER */
+.header{
+  margin-bottom:36px;
+}
+
+.header h1{
+  margin:0;
+  font-size:2.6rem;
+  font-weight:900;
+}
+
+.header p{
+  margin-top:8px;
+  color:var(--muted);
+}
+
+/* KPIS */
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  margin-bottom:36px;
+}
+
+.kpi{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:26px;
+}
+
+.kpi span{
+  color:var(--muted);
+  font-size:.85rem;
+}
+
+.kpi h2{
+  margin-top:12px;
+  font-size:2.4rem;
+  font-weight:900;
+}
+
+/* TABLE */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  overflow:hidden;
+}
+
+.card-header{
+  padding:22px 28px;
+  border-bottom:1px solid var(--border);
+  font-weight:800;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:16px 22px;
+  text-align:left;
+}
+
+th{
+  font-size:.8rem;
+  color:var(--muted);
+}
+
+tr:hover td{
+  background:#f8fafc;
+}
+
+.badge{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:.7rem;
+  font-weight:800;
+  background:#dcfce7;
+  color:#166534;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const admin = JSON.parse(localStorage.getItem("admin"));
+if(!admin) location.href="admin-login.html";
+</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo"><i data-lucide="shield"></i> RMS Admin</div>
+
+  <nav class="nav">
+    <a href="admin.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="users.html"><i data-lucide="users"></i> Users</a>
+    <a href="admin-properties.html"><i data-lucide="building-2"></i> Properties</a>
+    <a class="active"><i data-lucide="credit-card"></i> Sales</a>
+    <a href="approvals.html"><i data-lucide="check-circle"></i> Approvals</a>
+  </nav>
+
+  <div class="logout">
+    <button onclick="logoutAdmin()">Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <section class="header">
+    <h1>Sales Overview</h1>
+    <p>All confirmed purchases across the platform</p>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi">
+      <span>Total Sales</span>
+      <h2 id="totalSales">0</h2>
+    </div>
+    <div class="kpi">
+      <span>Total Revenue</span>
+      <h2 id="totalRevenue">₹0</h2>
+    </div>
+    <div class="kpi">
+      <span>Active Customers</span>
+      <h2 id="totalCustomers">0</h2>
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="card-header">Confirmed Bookings</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Booking</th>
+          <th>User</th>
+          <th>Property</th>
+          <th>Duration</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="salesTable"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+lucide.createIcons();
+
+async function loadSales(){
+  const res = await fetch("http://127.0.0.1:5000/admin/sales");
+  const data = await res.json();
+
+  const table = document.getElementById("salesTable");
+  table.innerHTML = "";
+
+  let revenue = 0;
+  const customers = new Set();
+
+  if(!data.length){
+    table.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center;color:#64748b;padding:30px">
+          No sales yet
+        </td>
+      </tr>`;
+    return;
+  }
+
+  data.forEach(s=>{
+    revenue += s.total_price;
+    customers.add(s.user_email);
+
+    table.innerHTML += `
+      <tr>
+        <td><b>BK${s.booking_id}</b></td>
+        <td>
+          ${s.user_name}<br>
+          <small style="color:#64748b">${s.user_email}</small>
+        </td>
+        <td>${s.property_name}</td>
+        <td>${s.start_date} → ${s.end_date}</td>
+        <td>₹${s.total_price.toLocaleString()}</td>
+        <td><span class="badge">CONFIRMED</span></td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("totalSales").innerText = data.length;
+  document.getElementById("totalRevenue").innerText = "₹" + revenue.toLocaleString();
+  document.getElementById("totalCustomers").innerText = customers.size;
+}
+
+function logoutAdmin(){
+  localStorage.removeItem("admin");
+  location.href="index.html";
+}
+
+loadSales();
+</script>
+
+</body>
+</html>

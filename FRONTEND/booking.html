@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Confirm Booking | RMS Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --primary:#6366f1;
+  --primary-dark:#4f46e5;
+  --primary-soft:#eef2ff;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --danger:#ef4444;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:Inter,sans-serif;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  display:flex;
+}
+
+/* ===== SIDEBAR (same as dashboard) ===== */
+.sidebar{
+  width:260px;
+  height:100vh;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:26px;
+  position:fixed;
+}
+
+.logo{
+  font-size:1.5rem;
+  font-weight:800;
+  color:var(--primary);
+  margin-bottom:40px;
+}
+
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  margin-bottom:8px;
+  color:var(--muted);
+  text-decoration:none;
+  border-radius:14px;
+  font-weight:600;
+  transition:.2s;
+}
+
+.nav a.active,
+.nav a:hover{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+}
+
+.logout{
+  margin-top:50px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.logout button{
+  background:none;
+  border:none;
+  color:var(--danger);
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* ===== MAIN ===== */
+.main{
+  margin-left:260px;
+  padding:44px;
+  width:100%;
+}
+
+/* ===== HEADER ===== */
+.header{
+  margin-bottom:36px;
+}
+
+.header h1{
+  margin:0;
+  font-size:2.2rem;
+  font-weight:800;
+}
+
+.header p{
+  color:var(--muted);
+}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:1.7fr 1fr;
+  gap:32px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--card);
+  border-radius:22px;
+  border:1px solid var(--border);
+  padding:28px;
+}
+
+/* ===== PROPERTY PREVIEW ===== */
+.preview{
+  background:linear-gradient(135deg,var(--primary-soft),#f8fafc);
+  padding:22px;
+  border-radius:16px;
+  margin-bottom:26px;
+}
+
+.preview h3{
+  margin:0 0 6px;
+  font-size:1.2rem;
+  font-weight:700;
+}
+
+/* ===== FORM ===== */
+.field{
+  margin-bottom:22px;
+}
+
+label{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--muted);
+  display:block;
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid var(--border);
+}
+
+input:disabled{
+  background:#f1f5f9;
+}
+
+/* ===== SUMMARY ===== */
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:14px;
+  font-weight:600;
+}
+
+.total{
+  font-size:2.2rem;
+  font-weight:800;
+  color:var(--primary);
+}
+
+/* ===== BUTTON ===== */
+.btn{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  border:none;
+  width:100%;
+  padding:16px;
+  border-radius:16px;
+  font-weight:800;
+  margin-top:24px;
+  cursor:pointer;
+}
+
+.btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">RMS Pro</div>
+  <nav class="nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="properties.html">Properties</a>
+    <a class="active">Booking</a>
+    <a href="profile.html">Profile</a>
+  </nav>
+  <div class="logout">
+    <button onclick="logout()">Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="header">
+    <h1>Confirm Your Booking</h1>
+    <p style="color:var(--muted)">Review property details and select rental dates</p>
+  </div>
+
+  <div class="grid">
+
+    <!-- LEFT -->
+    <div class="card">
+      <div class="preview">
+        <h3 id="propertyName">Loading...</h3>
+        <span id="propertyMeta"></span>
+      </div>
+
+      <div class="field">
+        <label>Start Date</label>
+        <input type="date" id="startDate">
+      </div>
+
+      <div class="field">
+        <label>End Date</label>
+        <input type="date" id="endDate" disabled>
+      </div>
+
+      <button class="btn" id="bookBtn" onclick="confirmBooking()" disabled>
+        Confirm Booking
+      </button>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="card">
+      <h3>Price Summary</h3>
+
+      <div class="summary-row">
+        <span>Rate</span>
+        <span id="rate"></span>
+      </div>
+
+      <div class="summary-row">
+        <span>Duration</span>
+        <span id="duration">0</span>
+      </div>
+
+      <hr>
+
+      <div class="summary-row">
+        <strong>Total</strong>
+        <span class="total" id="total">₹0</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+<script>
+/* ===== SAFE STATE LOAD ===== */
+const userRaw = localStorage.getItem("user");
+const user = userRaw ? JSON.parse(userRaw) : null;
+
+if (!user) {
+  location.href = "login.html";
+}
+
+const propertyId = localStorage.getItem("selectedPropertyId");
+
+if (!propertyId) {
+  document.body.innerHTML = `
+    <div style="
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:Inter,sans-serif;
+      background:#f8fafc;
+    ">
+      <div style="
+        background:#fff;
+        padding:40px;
+        border-radius:20px;
+        border:1px solid #e2e8f0;
+        text-align:center;
+        max-width:420px;
+      ">
+        <h2>Choose a Property First</h2>
+        <p style="color:#64748b;margin:16px 0 28px">
+          You cannot open booking directly.
+        </p>
+        <a href="properties.html"
+           style="
+            padding:14px 26px;
+            background:#6366f1;
+            color:#fff;
+            border-radius:14px;
+            text-decoration:none;
+            font-weight:700;
+           ">
+          Browse Properties
+        </a>
+      </div>
+    </div>
+  `;
+  throw new Error("Blocked direct access");
+}
+</script>
+
+
+<script>
+lucide.createIcons();
+
+const startDate = document.getElementById("startDate");
+const endDate = document.getElementById("endDate");
+const bookBtn = document.getElementById("bookBtn");
+
+const today = new Date().toISOString().split("T")[0];
+startDate.min = today;
+
+let property = null;
+
+/* LOAD PROPERTY */
+async function loadProperty(){
+  const res = await fetch(`http://127.0.0.1:5000/property/${propertyId}`)
+  property = await res.json();
+
+  document.getElementById("propertyName").innerText = property.name;
+  document.getElementById("propertyMeta").innerText =
+    `₹${property.price} / ${property.unit}`;
+  document.getElementById("rate").innerText =
+    `₹${property.price} per ${property.unit}`;
+
+  if (property.status === "booked") {
+    bookBtn.disabled = true;
+    bookBtn.innerText = "Already Booked";
+  }
+}
+
+/* DATE LOGIC */
+startDate.addEventListener("change", () => {
+  endDate.disabled = false;
+  endDate.value = "";
+  endDate.min = startDate.value;
+  bookBtn.disabled = true;
+});
+
+endDate.addEventListener("change", calculate);
+
+function calculate(){
+  if (!startDate.value || !endDate.value) return;
+
+  if (endDate.value <= startDate.value) {
+    alert("End date must be after start date");
+    endDate.value = "";
+    return;
+  }
+
+  let total = 0;
+  let durationText = "";
+
+  if (property.unit === "day") {
+    const days = Math.ceil(
+      (new Date(endDate.value) - new Date(startDate.value)) / 86400000
+    );
+    total = days * property.price;
+    durationText = `${days} days`;
+  } else {
+    const s = new Date(startDate.value);
+    const e = new Date(endDate.value);
+    const months =
+      (e.getFullYear() - s.getFullYear()) * 12 +
+      (e.getMonth() - s.getMonth()) + 1;
+    total = months * property.price;
+    durationText = `${months} month(s)`;
+  }
+
+  document.getElementById("duration").innerText = durationText;
+  document.getElementById("total").innerText = "₹" + total;
+  bookBtn.disabled = false;
+}
+
+/* CONFIRM BOOKING */
+function confirmBooking(){
+  const bookingData = {
+    user_id: user.id,
+    property_id: property.id,
+    start: startDate.value,
+    end: endDate.value,
+    total: document.getElementById("total").innerText.replace("₹","")
+  };
+
+  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+  window.location.href = "payment.html";
+}
+
+function logout(){
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href="index.html";
+}
+
+loadProperty();
+</script>
+
+</body>
+</html>

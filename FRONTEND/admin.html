@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard | RMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --primary:#4f46e5;
+  --primary-dark:#4338ca;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --success:#22c55e;
+  --warning:#f59e0b;
+  --danger:#ef4444;
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+
+body{
+  margin:0;
+  background:var(--bg);
+  display:flex;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:260px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:26px;
+  position:fixed;
+  height:100vh;
+}
+
+.logo{
+  display:flex;
+  gap:12px;
+  font-size:1.6rem;
+  font-weight:900;
+  color:var(--primary);
+  margin-bottom:40px;
+}
+
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.nav a.active,
+.nav a:hover{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+}
+
+.logout{
+  margin-top:50px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.logout button{
+  background:none;
+  border:none;
+  color:var(--danger);
+  font-weight:700;
+  display:flex;
+  gap:10px;
+  cursor:pointer;
+}
+
+/* ===== MAIN ===== */
+.main{
+  margin-left:260px;
+  padding:48px;
+  width:100%;
+  max-width:1400px;
+}
+
+/* ===== ADMIN BANNER ===== */
+.admin-banner{
+  background:linear-gradient(135deg,#4f46e5,#4338ca);
+  border-radius:28px;
+  padding:40px 48px;
+  color:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 30px 60px rgba(79,70,229,.4);
+  margin-bottom:48px;
+}
+
+.admin-banner h1{
+  margin:0;
+  font-size:2.6rem;
+  font-weight:900;
+}
+
+.admin-banner p{
+  margin-top:10px;
+  opacity:.9;
+  font-size:1.05rem;
+}
+
+.admin-badge{
+  background:rgba(255,255,255,.18);
+  padding:14px 26px;
+  border-radius:999px;
+  font-weight:800;
+}
+
+/* ===== KPI CARDS ===== */
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:28px;
+  margin-bottom:48px;
+}
+
+.kpi{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:28px;
+  position:relative;
+  overflow:hidden;
+}
+
+.kpi::after{
+  content:"";
+  position:absolute;
+  right:-40px;
+  top:-40px;
+  width:120px;
+  height:120px;
+  background:rgba(79,70,229,.08);
+  border-radius:50%;
+}
+
+.kpi h2{
+  margin-top:14px;
+  font-size:2.4rem;
+  font-weight:900;
+}
+
+
+.kpi span{
+  color:var(--muted);
+  font-size:.85rem;
+}
+
+.kpi h2{
+  margin-top:12px;
+  font-size:2.2rem;
+}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:28px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  overflow:hidden;
+}
+
+.card-header{
+  padding:24px 28px;
+  border-bottom:1px solid var(--border);
+  font-weight:800;
+}
+
+.card-body{
+  padding:28px;
+}
+
+/* ===== TABLE ===== */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:16px;
+  text-align:left;
+}
+
+th{
+  color:var(--muted);
+  font-size:.8rem;
+}
+
+tr:hover td{
+  background:#f8fafc;
+}
+
+/* ===== STATUS ===== */
+.badge{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:.7rem;
+  font-weight:800;
+}
+
+.pending{background:#fef3c7;color:#92400e}
+.approved{background:#dcfce7;color:#166534}
+
+/* ===== ACTIONS ===== */
+.action-btn{
+  padding:8px 14px;
+  border-radius:10px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.approve{background:#dcfce7;color:#166534}
+.reject{background:#fee2e2;color:#991b1b}
+</style>
+</head>
+
+<body>
+
+<script>
+const rawAdmin = localStorage.getItem("admin");
+const admin = rawAdmin ? JSON.parse(rawAdmin) : null;
+if(!admin) location.href="admin-login.html";
+</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo"><i data-lucide="shield"></i> RMS Admin</div>
+
+  <nav class="nav">
+    <a class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="users.html"><i data-lucide="users"></i> Users</a>
+    <a href="admin-properties.html"><i data-lucide="building-2"></i> Properties</a>
+    <a href="admin-sale.html"><i data-lucide="credit-card"></i> Sales</a>
+    <a href="approvals.html"><i data-lucide="check-circle"></i> Approvals</a>
+  </nav>
+
+  <div class="logout">
+    <button onclick="logoutAdmin()"><i data-lucide="log-out"></i> Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- BANNER -->
+  <section class="admin-banner">
+    <div>
+      <h1>Welcome, Admin</h1>
+      <p>Manage users, properties, and system approvals</p>
+    </div>
+    <div class="admin-badge">ADMIN PANEL</div>
+  </section>
+
+  <!-- KPIS -->
+  <section class="kpis">
+    <div class="kpi"><span>Total Users</span><h2 id="usersCount">0</h2></div>
+    <div class="kpi"><span>Total Properties</span><h2 id="propertiesCount">0</h2></div>
+    <div class="kpi"><span>Pending Approvals</span><h2 id="pendingCount">0</h2></div>
+    <div class="kpi"><span>Approved Listings</span><h2 id="approvedCount">0</h2></div>
+  </section>
+
+  <!-- GRID -->
+  <section class="grid">
+
+    <!-- PENDING PROPERTIES -->
+    <div class="card">
+      <div class="card-header">Pending Property Approvals</div>
+      <div class="card-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Owner</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="pendingTable">
+            <tr>
+              <td colspan="4" style="text-align:center;color:#64748b">
+                No pending approvals
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SYSTEM INFO -->
+    <div class="card">
+      <div class="card-header">System Overview</div>
+      <div class="card-body">
+        <p><b>Platform:</b> RMS Pro</p>
+        <p><b>Environment:</b> Local Development</p>
+        <p><b>Admin Email:</b> <span id="adminEmail"></span></p>
+      </div>
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+lucide.createIcons();
+document.getElementById("adminEmail").innerText = admin.email;
+
+
+function logoutAdmin(){
+  localStorage.removeItem("admin");
+  location.href="index.html";
+}
+</script>
+
+<script>
+lucide.createIcons();
+
+document.getElementById("adminEmail").innerText = admin.email;
+
+async function loadAdminKPIs(){
+  try{
+    const res = await fetch("http://127.0.0.1:5000/admin/kpis");
+    const data = await res.json();
+
+    document.getElementById("usersCount").innerText = data.total_users;
+    document.getElementById("propertiesCount").innerText = data.total_properties;
+    document.getElementById("pendingCount").innerText = data.pending;
+    document.getElementById("approvedCount").innerText = data.approved;
+  }catch(err){
+    console.error("Failed to load admin KPIs", err);
+  }
+}
+
+loadAdminKPIs();
+
+function logoutAdmin(){
+  localStorage.removeItem("admin");
+  location.href="index.html";
+}
+</script>
+
+</body>
+</html>

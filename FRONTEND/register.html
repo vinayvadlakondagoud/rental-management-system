@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Register | Rental Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <style>
+    :root {
+      --accent: #ffc107;
+      --dark: #111;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(rgba(0, 0, 0, 0.45),
+          rgba(0, 0, 0, 0.45)),
+        url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", Roboto, sans-serif;
+    }
+
+    .register-card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 40px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+
+    .register-title {
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .register-subtitle {
+      text-align: center;
+      color: #6c757d;
+      font-size: 0.95rem;
+      margin-bottom: 30px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #333;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      padding: 12px 14px;
+      border: 1px solid #ddd;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: none;
+    }
+
+    .btn-register {
+      background: var(--accent);
+      border: none;
+      color: #000;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 30px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .btn-register:hover {
+      background: #ffca2c;
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+
+    .form-footer a {
+      color: #000;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .home-icon {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      color: #000;
+      background: #ffc107;
+      padding: 8px 12px;
+      border-radius: 50%;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .home-icon:hover {
+      background: #ffca2c;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="register-card">
+
+    <a href="index.html" class="home-icon" title="Back to Home">
+      <i class="bi bi-house-fill"></i>
+    </a>
+
+    <h3 class="register-title">Create Account</h3>
+    <p class="register-subtitle">Register to access premium rentals</p>
+
+    <form id="registerForm">
+      <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <div class="input-group">
+          <input type="password" id="password" class="form-control" placeholder="Create a password"
+            oninput="checkStrength()" required>
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+        <div class="progress mt-2" style="height: 5px;">
+          <div id="strengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Confirm Password</label>
+        <div class="input-group">
+          <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm your password" required>
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword')">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="terms" required>
+        <label class="form-check-label" for="terms">I agree to the terms & conditions</label>
+      </div>
+
+      <div id="errorBox" class="alert alert-danger" style="display: none; font-size: 0.85rem; border-radius: 10px;">
+      </div>
+
+      <div id="errorBox" class="alert alert-danger" style="display: none; font-size: 0.8rem;"></div>
+
+      <button type="submit" class="btn btn-register">Register</button>
+    </form>
+
+    <script>
+      const errorBox = document.getElementById("errorBox");
+
+      function togglePassword(id) {
+        const field = document.getElementById(id);
+        field.type = field.type === "password" ? "text" : "password";
+      }
+
+      function checkStrength() {
+        const pwd = document.getElementById("password").value;
+        const bar = document.getElementById("strengthBar");
+
+        let strength = 0;
+        if (pwd.length >= 6) strength += 30;
+        if (/[A-Z]/.test(pwd)) strength += 30;
+        if (/[0-9]/.test(pwd)) strength += 20;
+        if (/[^A-Za-z0-9]/.test(pwd)) strength += 20;
+
+        bar.style.width = strength + "%";
+        bar.style.background =
+          strength < 40 ? "#dc3545" :
+            strength < 70 ? "#ffc107" :
+              "#28a745";
+      }
+
+      document.getElementById("registerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorBox.style.display = "none";
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const terms = document.getElementById("terms").checked;
+
+        if (password !== confirmPassword) {
+          errorBox.textContent = "Passwords do not match";
+          errorBox.style.display = "block";
+          return;
+        }
+
+        if (!terms) {
+          errorBox.textContent = "Please accept terms & conditions";
+          errorBox.style.display = "block";
+          return;
+        }
+
+        try {
+          const res = await fetch("http://127.0.0.1:5000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password })
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message);
+
+          sessionStorage.setItem("otp_email", email);
+          window.location.href = "verify-otp.html";
+
+        } catch (err) {
+          errorBox.textContent = err.message;
+          errorBox.style.display = "block";
+        }
+
+      });
+    </script>
+
+</body>
+
+</html>

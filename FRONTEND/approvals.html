@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Approvals | RMS Admin Professional</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-light: #eef2ff;
+  --bg: #f3f4f6;
+  --sidebar: #0f172a;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --success: #10b981;
+  --danger: #ef4444;
+}
+
+* { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text-main);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  width: 280px;
+  background: var(--sidebar);
+  color: #fff;
+  padding: 30px 20px;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+}
+
+.sidebar-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 40px;
+  padding-left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 8px;
+  transition: all 0.3s;
+}
+
+.nav a:hover, .nav a.active {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.nav a.active {
+  background: var(--primary);
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+/* --- MAIN CONTENT --- */
+.main {
+  margin-left: 280px;
+  padding: 40px 60px;
+  width: 100%;
+}
+
+.header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--sidebar);
+}
+
+/* --- SECTION CARDS --- */
+.section-container {
+  margin-bottom: 50px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: var(--text-main);
+}
+
+.section-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* --- DATA TABLE STYLING --- */
+.table-card {
+  background: var(--card);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #f8fafc;
+  text-align: left;
+  padding: 16px 24px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+tr:hover {
+  background-color: #fcfdfe;
+}
+
+/* --- BADGES & BUTTONS --- */
+.badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s;
+}
+
+.btn:active { transform: scale(0.95); }
+
+.btn-approve {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.btn-approve:hover { background: #bbf7d0; }
+
+.btn-reject {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-reject:hover { background: #fecaca; }
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+}
+</style>
+</head>
+
+<body>
+
+<script>
+  const admin = JSON.parse(localStorage.getItem("admin"));
+  if(!admin) location.href="admin-login.html";
+</script>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <i data-lucide="shield-check"></i> RMS Admin
+  </div>
+  <nav class="nav">
+    <a href="admin.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="approvals.html" class="active"><i data-lucide="check-circle"></i> Approvals</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="header-flex">
+    <div class="page-title">Management Center</div>
+    <div id="adminName" class="badge">Admin Access</div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header">
+      <i data-lucide="home"></i>
+      <h2>Property Requests</h2>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Property Details</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Owner</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="propertyRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="section-header">
+      <i data-lucide="calendar-days"></i>
+      <h2>Booking Reservations</h2>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Client</th>
+            <th>Duration</th>
+            <th>Total Amount</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookingRows"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+/* Initialize Lucide Icons */
+lucide.createIcons();
+
+/* ---------- PROPERTY APPROVALS ---------- */
+async function loadProperties(){
+  const res = await fetch("http://127.0.0.1:5000/admin/pending-properties");
+  const data = await res.json();
+  const container = document.getElementById("propertyRows");
+
+  container.innerHTML = "";
+  if(!data.length){
+    container.innerHTML = "<tr><td colspan='5' class='empty-state'>No pending property verifications.</td></tr>";
+    return;
+  }
+
+  data.forEach(p=>{
+    container.innerHTML += `
+      <tr>
+        <td style="font-weight:700; color:var(--sidebar)">${p.name}</td>
+        <td><span class="badge">${p.category}</span></td>
+        <td><div style="display:flex; align-items:center; gap:4px; color:var(--text-muted)">
+            <i data-lucide="map-pin" size="14"></i> ${p.location}</div></td>
+        <td>${p.owner}</td>
+        <td>
+          <div class="btn-group">
+            <button class="btn btn-approve" onclick="updateProperty(${p.id},'APPROVED')">
+               Approve
+            </button>
+            <button class="btn btn-reject" onclick="updateProperty(${p.id},'REJECTED')">
+               Reject
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+  lucide.createIcons();
+}
+
+async function updateProperty(id, status){
+  await fetch("http://127.0.0.1:5000/admin/update-property-status",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ property_id:id, status })
+  });
+  loadProperties();
+}
+
+/* ---------- BOOKING APPROVALS ---------- */
+async function loadBookings(){
+  const res = await fetch("http://127.0.0.1:5000/admin/pending-bookings");
+  const data = await res.json();
+  const container = document.getElementById("bookingRows");
+
+  container.innerHTML = "";
+  if(!data.length){
+    container.innerHTML = "<tr><td colspan='5' class='empty-state'>All booking requests have been processed.</td></tr>";
+    return;
+  }
+
+  data.forEach(b=>{
+    container.innerHTML += `
+      <tr>
+        <td style="font-weight:600;">${b.property_name}</td>
+        <td>${b.user_name}</td>
+        <td style="color:var(--text-muted); font-size: 0.85rem;">
+          ${b.start_date} → ${b.end_date}
+        </td>
+        <td style="font-weight:800; color:var(--primary)">₹${b.total_price}</td>
+        <td>
+          <div class="btn-group">
+            <button class="btn btn-approve" onclick="updateBooking(${b.booking_id},'APPROVE')">
+               Confirm
+            </button>
+            <button class="btn btn-reject" onclick="updateBooking(${b.booking_id},'REJECT')">
+               Cancel
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function updateBooking(id, action){
+  await fetch("http://127.0.0.1:5000/admin/update-booking-status",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ booking_id:id, action })
+  });
+  loadBookings();
+}
+
+/* Init Loads */
+loadProperties();
+loadBookings();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Checkout | RMS Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --error: #ef4444;
+            --success: #22c55e;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: #fff;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .header { text-align: center; margin-bottom: 32px; }
+        h1 { margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 8px; }
+
+        .summary-box {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .amount-label { font-weight: 600; color: var(--text-muted); }
+        .amount-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+
+        .field-group { margin-bottom: 20px; position: relative; }
+        label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px; }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1.5px solid #e2e8f0;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        input.invalid { border-color: var(--error); }
+
+        .error-msg { color: var(--error); font-size: 0.75rem; margin-top: 4px; display: none; }
+
+        .row { display: flex; gap: 16px; }
+        .flex-1 { flex: 1; }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: var(--primary);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover { background: var(--primary-dark); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="header">
+        <h1>Secure Checkout</h1>
+        <p class="subtitle">RMS Pro Booking Confirmation</p>
+    </div>
+
+    <div class="summary-box">
+        <span class="amount-label">Total Amount</span>
+        <span class="amount-value" id="amount">₹0</span>
+    </div>
+
+    <form id="paymentForm">
+        <div class="field-group">
+            <label>Card Number</label>
+            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+            <div class="error-msg" id="err-card">Invalid card number</div>
+        </div>
+
+        <div class="row">
+            <div class="field-group flex-1">
+                <label>Expiry Date</label>
+                <input type="text" id="expiry" placeholder="MM / YY" maxlength="7">
+                <div class="error-msg" id="err-expiry">Invalid date</div>
+            </div>
+            <div class="field-group flex-1">
+                <label>CVV</label>
+                <input type="password" id="cvv" placeholder="123" maxlength="3">
+                <div class="error-msg" id="err-cvv">Invalid</div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn" id="payBtn">
+            <span id="btnText">Pay Now</span>
+            <div class="spinner" id="btnSpinner"></div>
+        </button>
+    </form>
+
+    <div class="footer-note">
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.5 1.1 2.5 2.5S13.4 12 12 12s-2.5-1.1-2.5-2.5S10.6 7 12 7zm0 10c-2.1 0-4-1-5.2-2.6 0-1.7 3.5-2.6 5.2-2.6s5.2.9 5.2 2.6c-1.2 1.6-3.1 2.6-5.2 2.6z"/></svg>
+        Secure 256-bit SSL Encrypted Payment
+    </div>
+</div>
+
+<script>
+    const booking = JSON.parse(sessionStorage.getItem("pendingBooking"));
+    if(!booking) window.location.href="booking.html";
+
+    document.getElementById("amount").innerText = "₹" + booking.total;
+    document.getElementById("btnText").innerText = `Pay ₹${booking.total}`;
+
+    const form = document.getElementById('paymentForm');
+    const cardInput = document.getElementById('cardNumber');
+    const expiryInput = document.getElementById('expiry');
+    const cvvInput = document.getElementById('cvv');
+
+    // --- Formatters ---
+
+    // Format Card Number: 0000 0000 0000 0000
+    cardInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/\D/g, '');
+        e.target.value = val.replace(/(.{4})/g, '$1 ').trim();
+    });
+
+    // Format Expiry: MM / YY
+    expiryInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val.length >= 2) {
+            e.target.value = val.substring(0, 2) + ' / ' + val.substring(2, 4);
+        } else {
+            e.target.value = val;
+        }
+    });
+
+    // --- Validations ---
+
+    function validate() {
+        let isValid = true;
+        
+        // Dummy Card Validation: Only checks length (13-19 digits)
+        const rawCard = cardInput.value.replace(/\s/g, '');
+        if (rawCard.length < 13 || rawCard.length > 19) {
+            showError('card'); 
+            isValid = false;
+        } else { 
+            hideError('card'); 
+        }
+
+        // Expiry Validate
+        const expParts = expiryInput.value.split(' / ');
+        const month = parseInt(expParts[0]);
+        const year = parseInt("20" + expParts[1]);
+        const now = new Date();
+        const expiryDate = new Date(year, month - 1);
+        
+        if (!month || month > 12 || expiryDate < now || expParts[1]?.length < 2) {
+            showError('expiry'); 
+            isValid = false;
+        } else { 
+            hideError('expiry'); 
+        }
+
+        // CVV Validate
+        if (cvvInput.value.length < 3) {
+            showError('cvv'); 
+            isValid = false;
+        } else { 
+            hideError('cvv'); 
+        }
+
+        return isValid;
+    }
+
+    function showError(field) {
+        document.getElementById(`err-${field}`).style.display = 'block';
+        document.getElementById(field === 'card' ? 'cardNumber' : field).classList.add('invalid');
+    }
+
+    function hideError(field) {
+        document.getElementById(`err-${field}`).style.display = 'none';
+        document.getElementById(field === 'card' ? 'cardNumber' : field).classList.remove('invalid');
+    }
+
+    // --- Submission ---
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        if (!validate()) return;
+
+        const btn = document.getElementById('payBtn');
+        const text = document.getElementById('btnText');
+        const spinner = document.getElementById('btnSpinner');
+
+        btn.disabled = true;
+        text.style.display = 'none';
+        spinner.style.display = 'block';
+
+        try {
+            const response = await fetch("http://127.0.0.1:5000/payment-success", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...booking,
+                    paymentTimestamp: new Date().toISOString()
+                })
+            });
+
+            if(response.ok) {
+                sessionStorage.removeItem("pendingBooking");
+                alert("Payment successful! Your booking is being reviewed.");
+                window.location.href = "dashboard.html";
+            }
+        } catch (err) {
+            alert("Connection error. Please try again.");
+            btn.disabled = false;
+            text.style.display = 'block';
+            spinner.style.display = 'none';
+        }
+    };
+</script>
+
+</body>
+</html>

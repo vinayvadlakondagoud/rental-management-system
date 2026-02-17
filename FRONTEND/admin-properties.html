@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Properties | RMS Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --primary:#4f46e5;
+  --primary-dark:#4338ca;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --success:#22c55e;
+  --danger:#ef4444;
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+
+body{
+  margin:0;
+  background:var(--bg);
+  display:flex;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:260px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:26px;
+  position:fixed;
+  height:100vh;
+}
+
+.logo{
+  display:flex;
+  gap:12px;
+  font-size:1.6rem;
+  font-weight:900;
+  color:var(--primary);
+  margin-bottom:40px;
+}
+
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.nav a.active,
+.nav a:hover{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+}
+
+.logout{
+  margin-top:50px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.logout button{
+  background:none;
+  border:none;
+  color:var(--danger);
+  font-weight:700;
+  display:flex;
+  gap:10px;
+  cursor:pointer;
+}
+
+/* ===== MAIN ===== */
+.main{
+  margin-left:260px;
+  padding:48px;
+  width:100%;
+  max-width:1400px;
+}
+
+/* ===== HEADER ===== */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin-bottom:40px;
+}
+
+.header h1{
+  margin:0;
+  font-size:2.6rem;
+  font-weight:900;
+}
+
+.header p{
+  margin-top:6px;
+  color:var(--muted);
+}
+
+.search{
+  padding:14px 18px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  width:300px;
+}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:28px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  overflow:hidden;
+  transition:.25s;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 30px 60px rgba(0,0,0,.12);
+}
+
+.card img{
+  width:100%;
+  height:190px;
+  object-fit:cover;
+}
+
+.card-body{
+  padding:22px;
+}
+
+.card-body h4{
+  margin:0 0 6px;
+  font-size:1.1rem;
+  font-weight:800;
+}
+
+.meta{
+  color:var(--muted);
+  font-size:.85rem;
+  margin-bottom:14px;
+}
+
+.price{
+  font-weight:800;
+}
+
+.badge{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:.7rem;
+  font-weight:800;
+}
+
+.available{background:#dcfce7;color:#166534}
+.booked{background:#fee2e2;color:#991b1b}
+
+.actions{
+  margin-top:16px;
+  display:flex;
+  gap:12px;
+}
+
+.actions button{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.view{
+  background:#eef2ff;
+  color:#3730a3;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const admin = JSON.parse(localStorage.getItem("admin"));
+if(!admin) location.href="admin-login.html";
+</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo"><i data-lucide="shield"></i> RMS Admin</div>
+
+  <nav class="nav">
+    <a href="admin.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="users.html"><i data-lucide="users"></i> Users</a>
+    <a class="active"><i data-lucide="building-2"></i> Properties</a>
+    <a href="admin-sale.html"><i data-lucide="credit-card"></i> Sales</a>
+    <a href="approvals.html"><i data-lucide="check-circle"></i> Approvals</a>
+  </nav>
+
+  <div class="logout">
+    <button onclick="logoutAdmin()"><i data-lucide="log-out"></i> Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <section class="header">
+    <div>
+      <h1>All Properties</h1>
+      <p>Administrative view of approved listings</p>
+    </div>
+    <input class="search" placeholder="Search properties..." oninput="filter(this.value)">
+  </section>
+
+  <section class="grid" id="propertyGrid"></section>
+
+</main>
+
+<script>
+lucide.createIcons();
+
+let allProperties=[];
+
+async function loadProperties(){
+  const res = await fetch("http://127.0.0.1:5000/properties");
+  allProperties = await res.json();
+  render(allProperties);
+}
+
+function render(list){
+  const grid = document.getElementById("propertyGrid");
+  grid.innerHTML = "";
+
+  if(!list.length){
+    grid.innerHTML = "<p style='color:#64748b'>No properties found</p>";
+    return;
+  }
+
+  list.forEach(p=>{
+    grid.innerHTML += `
+      <div class="card">
+        <img src="${p.image_url}">
+        <div class="card-body">
+          <h4>${p.name}</h4>
+          <div class="meta">${p.category} • ${p.location}</div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="price">₹${p.price} / ${p.unit}</div>
+            <span class="badge ${p.status}">${p.status.toUpperCase()}</span>
+          </div>
+
+          <div class="actions">
+            <button class="view">View</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function filter(q){
+  q=q.toLowerCase();
+  render(allProperties.filter(p=>
+    p.name.toLowerCase().includes(q) ||
+    p.category.toLowerCase().includes(q) ||
+    p.location.toLowerCase().includes(q)
+  ));
+}
+
+function logoutAdmin(){
+  localStorage.removeItem("admin");
+  location.href="index.html";
+}
+
+loadProperties();
+</script>
+
+</body>
+</html>

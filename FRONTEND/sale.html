@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Purchases | RMS Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --primary:#6366f1;
+  --primary-dark:#4f46e5;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --success:#22c55e;
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+
+body{
+  margin:0;
+  background:var(--bg);
+  display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:26px;
+  position:fixed;
+  height:100vh;
+}
+
+.logo{
+  font-size:1.5rem;
+  font-weight:800;
+  color:var(--primary);
+  margin-bottom:40px;
+}
+
+.nav a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.nav a.active,
+.nav a:hover{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+}
+
+.logout{
+  margin-top:50px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+}
+
+.logout button{
+  background:none;
+  border:none;
+  color:#ef4444;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* MAIN */
+.main{
+  margin-left:260px;
+  padding:44px;
+  width:100%;
+}
+
+.header{
+  margin-bottom:36px;
+}
+
+.header h1{
+  margin:0;
+  font-size:2.2rem;
+  font-weight:800;
+}
+
+.header p{
+  color:var(--muted);
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:28px;
+}
+
+/* CARD */
+.card{
+  background:#fff;
+  border-radius:22px;
+  border:1px solid var(--border);
+  overflow:hidden;
+  transition:.25s;
+}
+
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 30px 60px rgba(0,0,0,.15);
+}
+
+.card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+}
+
+.card-body{
+  padding:22px;
+}
+
+.card-body h4{
+  margin:0 0 6px;
+  font-size:1.15rem;
+  font-weight:700;
+}
+
+.meta{
+  font-size:.85rem;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+
+.price{
+  font-weight:800;
+}
+
+.badge{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:.7rem;
+  font-weight:700;
+  background:#dcfce7;
+  color:#166534;
+}
+
+.details{
+  margin-top:14px;
+  font-size:.85rem;
+  color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user) location.href="login.html";
+</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">RMS Pro</div>
+  <nav class="nav">
+    <a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+    <a href="properties.html"><i data-lucide="building-2"></i> Properties</a>
+    <a class="active"><i data-lucide="shopping-bag"></i> My Purchases</a>
+    <a href="profile.html"><i data-lucide="user"></i> Profile</a>
+  </nav>
+  <div class="logout">
+    <button onclick="logout()">Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="header">
+    <h1>My Purchased Properties</h1>
+    <p>All properties you have successfully booked</p>
+  </div>
+
+  <section class="grid" id="salesGrid"></section>
+
+</main>
+
+<script>
+lucide.createIcons();
+
+async function loadSales(){
+  const res = await fetch(`http://127.0.0.1:5000/sales/${user.id}`);
+  const data = await res.json();
+
+  const grid = document.getElementById("salesGrid");
+  grid.innerHTML = "";
+
+  if(!data.length){
+    grid.innerHTML = `
+      <p style="color:#64748b">
+        You haven’t purchased any properties yet.
+      </p>`;
+    return;
+  }
+
+  data.forEach(p=>{
+    grid.innerHTML += `
+      <div class="card">
+        <img src="${p.image_url}">
+        <div class="card-body">
+          <h4>${p.name}</h4>
+          <div class="meta">${p.category} • ${p.location}</div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="price">₹${p.total_price}</div>
+            <span class="badge">CONFIRMED</span>
+          </div>
+
+          <div class="details">
+            <div>Duration: ${p.start_date} → ${p.end_date}</div>
+            <div>Rate: ₹${p.price} / ${p.unit}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function logout(){
+  localStorage.clear();
+  sessionStorage.clear();
+  location.href="index.html";
+}
+
+loadSales();
+</script>
+
+</body>
+</html>

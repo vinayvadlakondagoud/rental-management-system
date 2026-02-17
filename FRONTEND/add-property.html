@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Add Property | RMS Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root{
+  --primary:#6366f1;
+  --primary-dark:#4f46e5;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e2e8f0;
+  --muted:#64748b;
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+
+body{
+  margin:0;
+  background:var(--bg);
+  display:flex;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:260px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:26px;
+  height:100vh;
+  position:fixed;
+}
+
+.logo{
+  font-size:1.5rem;
+  font-weight:800;
+  color:var(--primary);
+  margin-bottom:40px;
+}
+
+.nav a{
+  display:flex;
+  gap:12px;
+  padding:14px 18px;
+  border-radius:14px;
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.nav a.active,
+.nav a:hover{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+}
+
+/* ===== MAIN ===== */
+.main{
+  margin-left:260px;
+  padding:48px;
+  width:100%;
+  max-width:900px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:#fff;
+  border-radius:26px;
+  border:1px solid var(--border);
+  padding:42px;
+}
+
+h1{
+  margin:0 0 8px;
+  font-size:2.3rem;
+  font-weight:800;
+}
+
+p{
+  color:var(--muted);
+  margin-bottom:34px;
+}
+
+/* ===== FORM ===== */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:24px;
+}
+
+.field{margin-bottom:18px}
+label{
+  font-size:.8rem;
+  font-weight:700;
+  color:var(--muted);
+  margin-bottom:6px;
+  display:block;
+}
+
+input,select{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  font-size:.95rem;
+}
+
+.full{grid-column:1/-1}
+
+.error{
+  color:#ef4444;
+  font-size:.75rem;
+  margin-top:4px;
+  display:none;
+}
+
+.btn{
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;
+  border:none;
+  padding:16px;
+  border-radius:16px;
+  font-weight:800;
+  width:100%;
+  margin-top:26px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user) location.href="login.html";
+</script>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">RMS Pro</div>
+  <nav class="nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active">Add Property</a>
+    <a href="properties.html">Properties</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="card">
+    <h1>Add New Property</h1>
+    <p>Your property will be visible after admin approval</p>
+
+    <form onsubmit="submitProperty(event)">
+      <div class="grid">
+
+        <div class="field">
+          <label>Property Name</label>
+          <input id="name" required minlength="3">
+        </div>
+
+        <div class="field">
+          <label>Category</label>
+          <select id="category" required>
+            <option value="">Select category</option>
+            <option>Real Estate</option>
+            <option>Vehicle</option>
+            <option>Equipment</option>
+            <option>Commercial</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Price (₹)</label>
+          <input id="price" type="number" min="1" required>
+        </div>
+
+        <div class="field">
+          <label>Billing Unit</label>
+          <select id="unit" required>
+            <option value="">Select unit</option>
+            <option value="day">Per Day</option>
+            <option value="mo">Per Month</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label>Location</label>
+          <input id="location" required minlength="3">
+        </div>
+
+        <div class="field full">
+          <label>Image URL</label>
+          <input id="image" type="url" required placeholder="https://images.unsplash.com/...">
+        </div>
+
+      </div>
+
+      <button class="btn">Submit for Approval</button>
+    </form>
+  </div>
+</main>
+
+<script>
+async function submitProperty(e){
+  e.preventDefault();
+
+  const nameEl = document.getElementById("name");
+  const categoryEl = document.getElementById("category");
+  const priceEl = document.getElementById("price");
+  const unitEl = document.getElementById("unit");
+  const locationEl = document.getElementById("location");
+  const imageEl = document.getElementById("image");
+
+  if (!nameEl || !categoryEl || !priceEl || !unitEl || !locationEl || !imageEl) {
+    alert("Form error: missing fields");
+    return;
+  }
+
+  if (priceEl.value <= 0) {
+    alert("Price must be greater than zero");
+    return;
+  }
+
+  const payload = {
+    name: nameEl.value.trim(),
+    category: categoryEl.value,
+    price: Number(priceEl.value),
+    unit: unitEl.value,
+    location: locationEl.value.trim(),
+    image_url: imageEl.value.trim(),
+    owner_id: user.id
+  };
+
+  const res = await fetch("http://127.0.0.1:5000/add-property", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message || "Failed to submit property");
+    return;
+  }
+
+  alert("✅ Property submitted successfully. Waiting for admin approval.");
+  window.location.href = "properties.html";
+}
+</script>
+
+</body>
+</html>

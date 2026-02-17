@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Login | RMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#4f46e5;
+  --bg:#f1f5f9;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --danger:#ef4444;
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif}
+
+body{
+  margin:0;
+  height:100vh;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.card{
+  background:#fff;
+  width:420px;
+  padding:42px;
+  border-radius:26px;
+  box-shadow:0 30px 60px rgba(0,0,0,.25);
+  text-align:center;
+}
+
+h1{
+  margin:0;
+  font-size:2.2rem;
+  font-weight:900;
+}
+
+.subtitle{
+  color:var(--muted);
+  margin:10px 0 34px;
+}
+
+.avatar{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  color:#fff;
+  font-size:2.6rem;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 18px;
+}
+
+label{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--muted);
+  display:block;
+  text-align:left;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid #e2e8f0;
+  margin-top:8px;
+  margin-bottom:22px;
+  font-size:1rem;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  color:#fff;
+  font-size:1rem;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.error{
+  color:var(--danger);
+  font-weight:700;
+  margin-top:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="avatar">V</div>
+
+  <h1>Admin Login</h1>
+  <p class="subtitle">RMS Administration Panel</p>
+
+  <label>Admin Name</label>
+  <input id="adminName" type="text" placeholder="Enter admin name">
+
+  <label>Password</label>
+  <input id="password" type="password" placeholder="Enter admin password">
+
+  <button onclick="adminLogin()">Login as Admin</button>
+
+  <div id="error" class="error"></div>
+</div>
+
+<script>
+function adminLogin(){
+  const name = document.getElementById("adminName").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const error = document.getElementById("error");
+
+  error.innerText = "";
+
+  if(!name || !password){
+    error.innerText = "All fields are required";
+    return;
+  }
+
+  /* ✅ FIXED ADMIN CREDENTIALS */
+  if(name !== "Vinay" || password !== "admin123"){
+    error.innerText = "Invalid admin credentials";
+    return;
+  }
+
+  /* STORE ADMIN SESSION */
+  localStorage.setItem("admin", JSON.stringify({
+    name: "Vinay",
+    role: "ADMIN"
+  }));
+
+  location.href = "admin.html";
+}
+</script>
+
+</body>
+</html>

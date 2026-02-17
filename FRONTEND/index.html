@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>DreamHome - Luxury Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --primary-gold: #ffc107;
+            --dark-bg: #111111;
+            --overlay: rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* --- Navigation --- */
+        .navbar {
+            backdrop-filter: blur(15px);
+            background: rgba(0, 0, 0, 0.85) !important;
+            padding: 1rem 0;
+            transition: 0.3s;
+        }
+
+        /* --- Hero Section (Full Screen) --- */
+        .top-section {
+            background: linear-gradient(var(--overlay), var(--overlay)), 
+                        url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c') center/cover no-repeat;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin: 0;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            padding: 0 20px;
+            text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .section-header {
+            padding: 40px 20px 50px;
+        }
+
+        .section-title {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            padding-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-gold);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* --- Enhanced Card Styling --- */
+        .custom-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: var(--transition);
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+
+        .custom-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+        }
+
+        .card-img-container {
+            height: 240px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .custom-card:hover .card-img-container img {
+            transform: scale(1.1);
+        }
+
+        .price-tag {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #1a1a1a;
+        }
+
+        /* --- Footer --- */
+        .main-footer {
+            background: #0d0d0d;
+            color: #999;
+            padding: 80px 0 40px;
+            margin-top: 100px;
+        }
+
+        .footer-heading {
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        .footer-link {
+            color: #777;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .footer-link:hover {
+    color: var(--primary-gold);
+    /* padding-left: 5px;  <-- Remove or comment this out for better centered behavior */
+}
+
+        .social-circle {
+            width: 38px;
+            height: 38px;
+            background: #1a1a1a;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 10px;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .social-circle:hover {
+            background: var(--primary-gold);
+            color: #000;
+        }
+
+        .btn-gold {
+            background-color: var(--primary-gold);
+            border-color: var(--primary-gold);
+            color: #000;
+            font-weight: 700;
+            padding: 14px 40px;
+            transition: var(--transition);
+        }
+
+        .btn-gold:hover {
+            background-color: #ffca2c;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-warning" href="#">RENTAL MANAGEMENT SYSTEM</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#properties">Properties</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#vehicles">Vehicles</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#equipment">Equipment</a></li>
+                    <li class="nav-item dropdown ms-lg-3">
+                        <a class="btn btn-outline-warning btn-sm mt-1 px-3" href="#" role="button" data-bs-toggle="dropdown">Account</a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                            <li><a class="dropdown-item" href="login.html">Login</a></li>
+                            <li><a class="dropdown-item" href="register.html">Register</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="admin-login.html">Admin Login</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="top-section" id="home">
+        <div class="hero-content">
+            <h2 class="display-1 fw-bold mb-2">Find Your Next Adventure</h2>
+            <p class="lead fs-4 mb-5 opacity-90">Experience the world's most exclusive marketplace for Luxury Living, Elite Travel, and Professional Tools.</p>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-gold btn-lg rounded-pill shadow-lg" onclick="window.location.href='register.html'">Get Started Today</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="properties" class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Residential Properties</h2>
+            <p class="text-muted">Curated homes for the modern visionary.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card custom-card">
+                    <div class="card-img-container">
+                        <span class="badge bg-dark position-absolute m-3 top-0 start-0">FOR SALE</span>
+                        <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994" alt="Villa">
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-1">Skyline Luxury Villa</h5>
+                        <p class="text-muted small mb-3"><i class="bi bi-geo-alt text-warning"></i> Mumbai, Maharashtra</p>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <span class="price-tag">₹1.1 Cr</span>
+                            <span class="badge rounded-pill bg-light text-dark px-3">4 BHK • Pool</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card custom-card">
+                    <div class="card-img-container">
+                        <span class="badge bg-success position-absolute m-3 top-0 start-0">NEW LISTING</span>
+                        <img src="https://media.istockphoto.com/id/1165384568/photo/europe-modern-complex-of-residential-buildings.jpg?s=612x612&w=0&k=20&c=iW4NBiMPKEuvaA7h8wIsPHikhS64eR-5EVPfjQ9GPOA=" alt="Apartment">
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-1">Modern Heights</h5>
+                        <p class="text-muted small mb-3"><i class="bi bi-geo-alt text-warning"></i> Bangalore, Karnataka</p>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <span class="price-tag">₹1.8 Cr</span>
+                            <span class="badge rounded-pill bg-light text-dark px-3">3 BHK • Gym</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card custom-card">
+                    <div class="card-img-container">
+                        <span class="badge bg-primary position-absolute m-3 top-0 start-0">CORPORATE</span>
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab" alt="Commercial">
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-1">Elite Business Hub</h5>
+                        <p class="text-muted small mb-3"><i class="bi bi-geo-alt text-warning"></i> Cyber City, Gurgaon</p>
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <span class="price-tag">₹2.2 Cr</span>
+                            <span class="badge rounded-pill bg-light text-dark px-3">Office Space</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="vehicles" class="bg-white mt-5 pb-5">
+        <div class="container">
+            <div class="section-header text-center">
+                <h2 class="section-title">Premium Vehicle Fleet</h2>
+                <p class="text-muted">Luxury on wheels for every destination.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card custom-card border">
+                        <div class="card-img-container">
+                            <img src="https://media.istockphoto.com/id/1893187059/photo/mg-zs-on-a-street.jpg?s=612x612&w=0&k=20&c=CzCcnbLk3j8oTHv-N5DC3VnPmswAp-Ncks9xco4XYno=" alt="Sedan">
+                        </div>
+                        <div class="card-body text-center p-4">
+                            <h5 class="fw-bold">Executive Sedan</h5>
+                            <p class="text-warning fw-bold mb-0">₹2,000 <small class="text-muted fw-normal">/ day</small></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card custom-card border">
+                        <div class="card-img-container">
+                            <img src="https://img.etimg.com/thumb/width-420,height-315,imgsize-28466,resizemode-75,msid-124456113/industry/auto/cars-uvs/bmw-india-sales-up-21-at-4204-units-in-q3-says-gst-rate-cut-festive-demand-to-drive-sales/bmw-india-sales-up-21-in-q3.jpg" alt="Luxury">
+                        </div>
+                        <div class="card-body text-center p-4">
+                            <h5 class="fw-bold">Luxury BMW Series</h5>
+                            <p class="text-warning fw-bold mb-0">₹3,500 <small class="text-muted fw-normal">/ day</small></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card custom-card border">
+                        <div class="card-img-container">
+                            <img src="https://hips.hearstapps.com/hmg-prod/images/2023-kia-telluride-x-line-101-1666960056.jpg?crop=0.654xw:0.553xh;0.176xw,0.373xh&resize=700:*" alt="SUV">
+                        </div>
+                        <div class="card-body text-center p-4">
+                            <h5 class="fw-bold">Adventure SUV</h5>
+                            <p class="text-warning fw-bold mb-0">₹5,500 <small class="text-muted fw-normal">/ day</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="equipment" class="container mt-5">
+        <div class="section-header text-center">
+            <h2 class="section-title">Professional Equipment</h2>
+            <p class="text-muted">High-end tools for high-end results.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card custom-card text-center border-0">
+                    <div class="card-img-container">
+                        <img src="https://improvephotography.com/wp-content/uploads/2021/08/Best-Canon-Camera-For-Photography.jpg" alt="Camera">
+                    </div>
+                    <div class="card-body p-4 bg-light">
+                        <h5 class="fw-bold">Photography Kits</h5>
+                        <p class="text-primary fw-bold mb-0">Starts at ₹1,200/day</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card custom-card text-center border-0">
+                    <div class="card-img-container">
+                        <img src="https://cdn-dynmedia-1.microsoft.com/is/image/microsoftcorp/FL2C-B-BB-00?qlt=90&wid=1253&hei=705&extendN=0.12,0.12,0.12,0.12&bgc=FFFFFFFF&fmt=jpg" alt="Laptops">
+                    </div>
+                    <div class="card-body p-4 bg-light">
+                        <h5 class="fw-bold">Corporate Laptops</h5>
+                        <p class="text-primary fw-bold mb-0">Starts at ₹2,500/day</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card custom-card text-center border-0">
+                    <div class="card-img-container">
+                        <img src="https://etimg.etb2bimg.com/thumb/msid-94146979,width-1200,resizemode-4/.jpg" alt="Electronics">
+                    </div>
+                    <div class="card-body p-4 bg-light">
+                        <h5 class="fw-bold">Event Electronics</h5>
+                        <p class="text-primary fw-bold mb-0">Starts at ₹3,000/day</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+    <div class="container text-center"> <div class="row g-5 justify-content-center"> <div class="col-lg-4 col-md-12">
+                <h3 class="text-warning fw-bold mb-4">DREAMHOME</h3>
+                <p>Elevating your lifestyle through curated luxury experiences. We provide the assets you need for a life without limits.</p>
+                <div class="social-icons mt-4">
+                    <a href="#" class="social-circle"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="social-circle"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-circle"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="social-circle"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-6">
+                <h6 class="footer-heading">Marketplace</h6>
+                <a href="#properties" class="footer-link">Real Estate</a>
+                <a href="#vehicles" class="footer-link">Vehicles</a>
+                <a href="#equipment" class="footer-link">Equipment</a>
+            </div>
+
+            <div class="col-lg-2 col-6">
+                <h6 class="footer-heading">Support</h6>
+                <a href="#" class="footer-link">Help Center</a>
+                <a href="#" class="footer-link">Contact Us</a>
+                <a href="#" class="footer-link">Terms</a>
+            </div>
+        </div>
+        
+        <hr class="border-secondary mt-5 opacity-25">
+        <p class="mb-0 small mt-4">© 2026 DreamHome Luxury Marketplace. All rights reserved.</p>
+    </div>
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.querySelectorAll(".custom-card").forEach(item => {
+            item.style.cursor = "pointer";
+            item.addEventListener("click", () => {
+                window.location.href = "login.html";
+            });
+        });
+    </script>
+</body>
+</html>
