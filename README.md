@@ -74,7 +74,7 @@ A full-stack **Rental Management System** built using **HTML, CSS, Python Flask,
 ### 🔹 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/rental-management-system.git
+git clone https://github.com/vinayvadlakondagoud/rental-management-system.git
 cd rental-management-system
 ```
 
